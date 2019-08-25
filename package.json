@@ -5,6 +5,7 @@
     },
     "description": "MIDI library disassembling and assembling MIDI clips and songs",
     "dependencies": {
+        "colony-core": "1.2.5",
         "midi-file-io": "2.0.0"
     },
     "devDependencies": {
