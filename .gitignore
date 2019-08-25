@@ -1,0 +1,18 @@
+# ignore the common tmp, debug, intermediate and ephemeral fellas
+*.DS_Store
+*.cache
+*.swp
+*~
+*.tmp
+*.zip
+/log
+
+# eliminate .idea
+.idea
+
+# npm modules will be built dynamically
+node_modules
+
+# dist will be built dynamically
+dist
+
