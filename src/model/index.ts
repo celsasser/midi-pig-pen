@@ -6,6 +6,7 @@
 
 export * from "./chord";
 export * from "./event";
+export * from "./graph";
 export * from "./header";
 export * from "./rhythm";
 export * from "./sequence";
