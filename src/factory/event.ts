@@ -90,4 +90,3 @@ export function createEventFromIoEvent({
 		..._.omit(event, "deltaTime")
 	};
 }
-

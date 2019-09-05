@@ -9,8 +9,8 @@ import {MidiHeader} from "./header";
 import {MidiTrack} from "./track";
 
 export class MidiSong {
-	header: MidiHeader;
-	tracks: MidiTrack[];
+	public readonly header: MidiHeader;
+	public readonly tracks: MidiTrack[];
 
 	constructor({
 		header,
@@ -23,14 +23,14 @@ export class MidiSong {
 		this.tracks = tracks;
 	}
 
-	clone(): MidiSong {
+	public clone(): MidiSong {
 		return new MidiSong({
 			header: _.cloneDeep(this.header),
 			tracks: _.cloneDeep(this.tracks)
 		});
 	}
 
-	get duration(): number {
+	public get duration(): number {
 		return _.chain(this.tracks)
 			.map("sequence.duration")
 			.max()

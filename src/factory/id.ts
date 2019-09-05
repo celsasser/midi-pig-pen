@@ -9,4 +9,3 @@ import * as shortid from "shortid";
 export function createId(type: "event"|"track"): string {
 	return `urn:${type}:${shortid.generate()}`;
 }
-

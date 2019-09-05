@@ -8,9 +8,10 @@ import * as _ from "lodash";
 import {MidiIoEventSubtype} from "midi-file-io";
 import {
 	GraphReusePolicy,
+	IGraph,
 	MidiSequence,
 	RankedNoteList,
-	TraverseGraphIterator
+	TraverseGraphParam
 } from "../model";
 
 
@@ -21,21 +22,20 @@ interface Node {
 	/**
 	 * 	total number of uses of this note
 	 */
-	count: number,
-	note: number,
+	count: number;
+	note: number;
 	/**
-	 * all note pathsOut out of this node. Mapped by note-from
+	 * all note paths into this node. Mapped by note-from
 	 */
-	pathsIn: NodeReferenceMap,
+	pathsIn: NodeReferenceMap;
 	/**
-	 * all note pathsOut into this node. Mapped by <code>this.note</code>
+	 * all note paths out of this node. Mapped by <code>this.note</code>
 	 */
-	pathsOut: NodeReferenceMap,
+	pathsOut: NodeReferenceMap;
 	/**
 	 * array of all sequences that contain this note and the index at which this note is
 	 */
-	sequences: SequenceElement[]
-
+	sequences: SequenceElement[];
 }
 
 type NodeMap = {[note: number]: Node};
@@ -47,8 +47,8 @@ interface NodeReference {
 	/**
 	 * Total number of references to <code>this.node</code>
 	 */
-	count: number,
-	node: Node
+	count: number;
+	node: Node;
 }
 
 type NodeReferenceMap = {[note: number]: NodeReference};
@@ -62,7 +62,7 @@ type SequenceElement = {eventIndex: number, sequence: MidiSequence};
  * - all of the notes that immediately follow it
  * - all references to the sequences that include it and the index in the sequence
  */
-export class SequenceGraph {
+export class SequenceGraph implements IGraph {
 	public readonly name: string;
 	private map: NodeMap = {};
 
@@ -73,7 +73,7 @@ export class SequenceGraph {
 	/**
 	 * Adds sequence's path to our graph
 	 */
-	addSequence(sequence: MidiSequence): void {
+	public addSequence(sequence: MidiSequence): void {
 		/**
 		 * Recursively adds the sequence
 		 */
@@ -99,7 +99,7 @@ export class SequenceGraph {
 					})).count++;
 					_ensureMappedValue(prev.pathsOut, node.note, () => ({
 						count: 0,
-						node: node
+						node
 					})).count++;
 				}
 				_addEventIndex(index + 1, node);
@@ -124,7 +124,7 @@ export class SequenceGraph {
 	/**
 	 * All notes in descending popularity order
 	 */
-	getAllNotes(): RankedNoteList {
+	public getAllNotes(): RankedNoteList {
 		return _.chain(this.map)
 			.map(node => ({
 				count: node.count,
@@ -140,7 +140,7 @@ export class SequenceGraph {
 	 * @param exclude - optional note numbers to exclude from the results
 	 * @return {{pathsIn: RankedNoteList, pathsOut: RankedNoteList}}
 	 */
-	getNotePaths(note: number, exclude: number[] = []): {
+	public getNotePaths(note: number, exclude: number[] = []): {
 		pathsIn: RankedNoteList,
 		pathsOut: RankedNoteList
 	} {
@@ -174,7 +174,7 @@ export class SequenceGraph {
 	 * @param note
 	 * @param partial - whether you want the entire sequence or from the matched index on
 	 */
-	getSequencesForNote({
+	public getSequencesForNote({
 		note,
 		partial = false
 	}: {
@@ -199,22 +199,12 @@ export class SequenceGraph {
 		}
 	}
 
-	/**
-	 * Traverses the graph and builds an array of note values. During each traversal either a note is added or iteration stops.
-	 * The note chosen during iteration is determined by the callback function <param>next</param> (which by default returns the most popular next note).
-	 * It returns the array of notes generated.
-	 */
-	traverse({
+	public traverse({
 		maxCount,
 		next = ({pathsOut}) => (pathsOut.length > 0) ? pathsOut[0].note : -1,
 		reusePolicy = GraphReusePolicy.ALLOW,
 		startNote
-	}: {
-		maxCount: number,
-		next?: TraverseGraphIterator,
-		reusePolicy?: GraphReusePolicy,
-		startNote: number
-	}): number[] {
+	}: TraverseGraphParam): number[] {
 		let exclude: number[] = [];
 		const _push = (note: number, index: number): number[] => {
 			if(index === maxCount || note < 0) {

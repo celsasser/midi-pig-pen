@@ -7,8 +7,8 @@
 import {MidiSequence} from "./sequence";
 
 export interface MidiTrack {
-	id: string,
-	instrument?: string,
-	name?: string,
-	sequence: MidiSequence
+	id: string;
+	instrument?: string;
+	name?: string;
+	sequence: MidiSequence;
 }

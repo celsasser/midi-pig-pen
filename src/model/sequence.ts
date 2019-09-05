@@ -12,7 +12,7 @@ import {MidiEvent} from "./event";
 export type MidiMetaSequence = number[];
 
 export interface MidiSequence {
-	duration: number,
-	events: MidiEvent[]
+	duration: number;
+	events: MidiEvent[];
 }
 

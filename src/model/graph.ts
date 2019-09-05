@@ -22,7 +22,36 @@ export enum GraphReusePolicy {
 	RESET = "reset"
 }
 
-export type RankedNoteElement = {count:number, note:number};
-export type RankedNoteList = RankedNoteElement[];
+export interface IGraph {
+	/**
+	 * Traverses the graph and builds an array of note values. During each traversal either a note is added or iteration stops.
+	 * The note chosen during iteration is determined by the callback function <param>next</param>.
+	 * It returns the array of notes generated.
+	 * @param maxCount - maximum number of notes to generate
+	 * @param next - chooses the next note to include in the returned sequence
+	 * @param reusePolicy
+	 * @param startNote - note within the graph from which to start
+	 */
+	traverse: (param: TraverseGraphParam) => number[];
+}
 
-export type TraverseGraphIterator = (param: {note:number, pathsIn:RankedNoteList, pathsOut:RankedNoteList}) => number;
+export type RankedNoteList = RankedNoteElement[];
+export type RankedNoteElement = {
+	count: number,
+	note: number
+};
+
+
+export type TraverseNoteSelector = (param: TraverseNoteSelectorParam) => number;
+export type TraverseNoteSelectorParam = {
+	note: number,
+	pathsIn: RankedNoteList,
+	pathsOut: RankedNoteList
+};
+
+export type TraverseGraphParam = {
+	maxCount: number,
+	next?: TraverseNoteSelector,
+	reusePolicy?: GraphReusePolicy,
+	startNote: number
+};

@@ -57,7 +57,7 @@ export function createSong({
 			formatType,
 			ticksPerQuarter
 		},
-		tracks: tracks
+		tracks
 	});
 }
 
@@ -83,10 +83,10 @@ export function createSongFromIoSong(data: MidiIoSong): MidiSong {
 				details: `note=${noteOff.noteNumber} at ${noteOff.offset} could not be resolved`,
 				message: "mididata integrity"
 			}));
-		};
+		}
 
-		let noteOnStack: MidiEvent[] = [],
-			offset = 0;
+		const noteOnStack: MidiEvent[] = [];
+		let offset: number = 0;
 
 		const track: MidiTrack = {
 			id: createId("track"),
@@ -101,8 +101,8 @@ export function createSongFromIoSong(data: MidiIoSong): MidiSong {
 		track.sequence.events = events.reduce((result: MidiEvent[], eventIO: MidiIoEvent) => {
 			offset += eventIO.deltaTime;
 			let event = createEventFromIoEvent({
-				offset,
-				event: eventIO
+				event: eventIO,
+				offset
 			});
 			// note: there are some events we take out of the track 'cause they are difficult to manage
 			// as events. We will put them back upon export (where valuable)

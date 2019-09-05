@@ -10,16 +10,16 @@ import {MidiIoEvent} from "midi-file-io";
  * An required subset of MidiEvent
  */
 export interface MidiDurationEvent {
-	duration: number,
-	offset: number
+	duration: number;
+	offset: number;
 }
 
 /**
  * Any and all MIDI track events
  */
 export interface MidiEvent extends Omit<MidiIoEvent, "deltaTime"> {
-	id: string,
-	duration: number,
-	offset: number
+	id: string;
+	duration: number;
+	offset: number;
 }
 

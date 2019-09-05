@@ -9,7 +9,7 @@ export type MidiNumberGenerator = (index: number, note: number) => number;
 export type MidiNumberType = number|number[]|MidiNumberGenerator;
 
 export interface MidiRatio {
-	denominator: number,
-	numerator: number
+	denominator: number;
+	numerator: number;
 }
 

@@ -1,0 +1,37 @@
+{
+	"extends": [
+		"tslint:recommended"
+	],
+	"linterOptions": {
+		"format": "stylish"
+	},
+	"rules": {
+		"arrow-parens": false,
+		"indent": [
+			true,
+			"tabs"
+		],
+		"interface-name": false,
+		"interface-over-type-literal": false,
+		"no-conditional-assignment": false,
+		"no-angle-bracket-type-assertion": false,
+		"no-consecutive-blank-lines": [true, 2],
+		"object-literal-sort-keys": true,
+		"ordered-imports": true,
+		"max-line-length": {
+			"options": {
+				"limit": 160
+			}
+		},
+		"trailing-comma": {
+			"severity": "error"
+		},
+		"variable-name": {
+			"options": [
+				"allow-leading-underscore",
+				"allow-pascal-case"
+			]
+		},
+		"whitespace": [false, "check-branch"]
+	}
+}
