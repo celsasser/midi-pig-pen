@@ -1,0 +1,94 @@
+{
+	"whole": {
+		"quartersPerUnit": 1,
+		"patterns": [
+			{
+				"on": 4
+			}
+		]
+	},
+	"half": {
+		"quartersPerUnit": 1,
+		"patterns": [
+			{
+				"on": 2
+			}
+		]
+	},
+	"quarter": {
+		"quartersPerUnit": 1,
+		"patterns": [
+			{
+				"on": 1
+			}
+		]
+	},
+	"eigth": {
+		"quartersPerUnit": 1,
+		"patterns": [
+			{
+				"on": 0.5
+			}
+		]
+	},
+	"sixteenth": {
+		"quartersPerUnit": 1,
+		"patterns": [
+			{
+				"on": 0.25
+			}
+		]
+	},
+	"thirtysecond": {
+		"quartersPerUnit": 1,
+		"patterns": [
+			{
+				"on": 0.125
+			}
+		]
+	},
+	"triplet-whole": {
+		"quartersPerUnit": {
+			"numerator": 4,
+			"denominator": 3
+		},
+		"patterns": [
+			{
+				"on": 1
+			}
+		]
+	},
+	"triplet-half": {
+		"quartersPerUnit": {
+			"numerator": 2,
+			"denominator": 3
+		},
+		"patterns": [
+			{
+				"on": 1
+			}
+		]
+	},
+	"triplet-quarter": {
+		"quartersPerUnit": {
+			"numerator": 1,
+			"denominator": 3
+		},
+		"patterns": [
+			{
+				"on": 1
+			}
+		]
+	},
+	"triplet-eigth": {
+		"quartersPerUnit": {
+			"numerator": 1,
+			"denominator": 6
+		},
+		"patterns": [
+			{
+				"on": 1
+			}
+		]
+	}
+}

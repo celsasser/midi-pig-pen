@@ -1,0 +1,23 @@
+{
+	"command": {
+		"callback": {
+			"iteration": {
+				"unit": "event"
+			}
+		}
+	},
+	"log": {
+		"level": "verbose"
+	},
+	"midi": {
+		"file": {
+			"empty": {
+				"beatsPerMinute": 120,
+				"denominator": 4,
+				"formatType": 1,
+				"numerator": 4,
+				"ticksPerQuarter": 480
+			}
+		}
+	}
+}

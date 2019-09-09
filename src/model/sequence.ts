@@ -9,7 +9,7 @@ import {MidiEvent} from "./event";
 /**
  * It's just a pattern. An array of offsets
  */
-export type MidiMetaSequence = number[];
+export type MetaSequence = number[];
 
 export interface MidiSequence {
 	duration: number;

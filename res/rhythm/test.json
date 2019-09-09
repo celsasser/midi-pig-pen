@@ -1,0 +1,23 @@
+{
+	"rest-start": {
+		"quartersPerUnit": 1,
+		"patterns": [
+			{
+				"off": 1
+			},
+			{
+				"on": 0.5,
+				"off": 0.5
+			}
+		]
+	},
+	"with-duration": {
+		"duration": 2,
+		"quartersPerUnit": 1,
+		"patterns": [
+			{
+				"on": 1
+			}
+		]
+	}
+}

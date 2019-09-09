@@ -19,6 +19,7 @@
 		/* Report errors on unused locals. */
 		"noUnusedLocals": true,
 		"pretty": false,
+		"resolveJsonModule": true,
 		"strict": true,
 		/* We are turning off because we don't want to be able to trust the integrity of a midi file and not validate read data types */
 		"strictNullChecks": true,
@@ -59,6 +60,7 @@
 		// "types": [],                           /* Type declaration files to be included in compilation. */
 	},
 	"include": [
+		"./res/**/*.ts",
 		"./src/**/*.js",
 		"./src/**/*.ts"
 	]

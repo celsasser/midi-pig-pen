@@ -1,0 +1,37 @@
+
+{
+	"scale": {
+		"type": {
+			"chromatic": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+			"major": [0, 2, 4, 5, 7, 9, 11],
+			"minor-natural": [0, 2, 3, 5, 7, 8, 10],
+			"minor-harmonic": [0, 2, 3, 5, 7, 8, 11],
+			"minor-melodic": [0, 2, 3, 5, 7, 9, 11],
+			"pentatonic-blues": [0, 3, 5, 7, 11]
+		},
+		"mode": {
+			"ionian": 0,
+			"dorian": 1,
+			"phrygian": 2,
+			"lydian": 3,
+			"mixolydian": 4,
+			"aeolian": 5,
+			"locrian": 6
+		}
+	},
+	"chord": {
+		"type": {
+			"triad": [0, 3, 5],
+			"sixth": [0, 3, 5, 6],
+			"seventh": [0, 3, 5, 7],
+			"sus2": [0, 2, 3, 5, 7],
+			"sus9": [0, 3, 5, 7, 9]
+		},
+		"inversion": {
+			"first": 0,
+			"second": 1,
+			"third": 2,
+			"fourth": 3
+		}
+	}
+}

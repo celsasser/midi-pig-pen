@@ -7,13 +7,22 @@
 import {MidiDurationEvent} from "./event";
 import {MidiRatio} from "./types";
 
-export interface MidiMetaRhythm {
+export type RhythmUnit = number|MidiRatio;
+
+export interface MetaRhythmDuration {
+	float: number;
+	floor: number;
+}
+
+export interface MetaRhythmPattern {
+	off?: number;
+	on?: number;
+}
+
+export interface MetaRhythmSequence {
 	duration?: number;
-	quartersPerUnit: number|MidiRatio;
-	pattern: {
-		off?: number;
-		on?: number;
-	}[];
+	quartersPerUnit: RhythmUnit;
+	patterns: MetaRhythmPattern[];
 }
 
 export interface MidiRhythm {
