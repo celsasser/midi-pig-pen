@@ -130,7 +130,7 @@ export class RhythmCalculator {
 		}
 		return Object.assign({
 			total: (sequence.duration !== undefined)
-				? sequence.duration
+				? sequence.duration * unitTicks
 				: result.off + result.on
 		}, result);
 	}

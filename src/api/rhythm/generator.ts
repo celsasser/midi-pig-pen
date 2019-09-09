@@ -5,9 +5,12 @@
  */
 
 import * as _ from "lodash";
+import {MidiIoEventSubtype} from "midi-file-io";
 import {
 	MetaRhythmSequence,
-	MidiRhythm
+	MidiDurationEvent,
+	MidiRhythm,
+	MidiSequence
 } from "../../model";
 import {RhythmCalculator} from "./calculator";
 
@@ -24,72 +27,74 @@ export class RhythmGenerator {
 
 	/**
 	 * Generates a rhythm based on the specified meta-pattern and duration
-	 * @param {MetaRhythmSequence} meta
-	 * @returns {MidiRhythm}
 	 */
-	generateRhythm(meta: MetaRhythmSequence): MidiRhythm {
+	fromMetaSequence(meta: MetaRhythmSequence): MidiRhythm {
+		let offset: number = 0;
+		const events: MidiDurationEvent[] = [];
 		const ticksPerUnit = this.calculator.getUnitTicks(meta.quartersPerUnit);
-		const computed = meta.patterns.reduce((result, node) => {
-			const {off, on, total} = this.calculator.getSequenceTicks()
-			if(node.on) {
-				result.events.push({
-					duration: Math.round(node.on * ticksPerUnit),
-					offset: result.offset
+		for(const pattern of meta.patterns) {
+			const {off, on} = this.calculator.getPatternTicks(pattern, ticksPerUnit);
+			if(on.float) {
+				events.push({
+					duration: on.float,
+					offset
 				});
 			}
-			result.offset = Math.round(_.get(node, "on", 0) * ticksPerUnit + _.get(node, "off", 0) * ticksPerUnit);
-			return result;
-		}, {events: [], offset: 0});
+			offset += off.float + on.float;
+		}
 		return {
 			duration: (meta.duration !== undefined)
 				? meta.duration * ticksPerUnit
-				: computed.offset,
-			events: computed.events
+				: offset,
+			events
 		};
 	}
 
 	/**
 	 * Sucks the rhythm out of a sequence
-	 * @param {number|undefined} duration
-	 * @param {number|undefined} offset - offset from which sequence starts. Defaults to first event
-	 * @param {MidiSequence} sequence
-	 * @returns {MidiRhythm}
+	 * @param duration
+	 * @param offset - offset from which sequence starts. Defaults to first event
+	 * @param sequence
 	 */
-	sequenceToRhythm({
-		duration = undefined,
-		offset = undefined,
+	fromSequence({
+		duration,
+		offset,
 		sequence
+	}: {
+		duration?: number,
+		offset?: number,
+		sequence: MidiSequence
 	}): MidiRhythm {
-		offset = (offset !== undefined)
+		const start: number = (offset !== undefined)
 			? offset
 			: _.get(sequence.events, "0.offset", 0);
-		const computed = _.chain(sequence.events)
-			.filter({subtype: "noteOn"})
-			.reduce((result, event) => {
-				result.events.push({
-					duration: event.duration,
-					offset: event.offset - offset
+		let maxOffset = start;
+		const events: MidiDurationEvent[] = [];
+		(sequence.events || [])
+			.filter(event => event.subtype === MidiIoEventSubtype.noteOn)
+			.forEach(noteEvent => {
+				events.push({
+					duration: noteEvent.duration,
+					offset: noteEvent.offset - start
 				});
-				result.maxOffset = Math.max(result.maxOffset, event.offset + event.duration - offset);
-				return result;
-			}, {events: [], maxOffset: 0})
-			.value();
+				maxOffset = Math.max(maxOffset, noteEvent.offset + noteEvent.duration);
+			});
 		return {
 			duration: (duration !== undefined)
 				? duration
-				: computed.maxOffset,
-			events: computed.events
+				: maxOffset - start,
+			events
 		};
 	}
 
 	/**
 	 * Quantize the rhythm.
 	 * Note:
-	 * @param {number} duration - duration to quantize by
-	 * @param {boolean} includeDuration
-	 * @param {boolean} includeOffset
-	 * @param {number} relation - in relation to offset
-	 * @param {MidiRhythm} rhythm - we have two choices regarding the returned duration here: retain the original or recompute it.
+	 * @param duration - duration to quantize by
+	 * @param includeDuration
+	 * @param includeOffset
+	 * @param relation - in relation to offset
+	 * @param rhythm - we have two choices regarding the returned duration here: retain the original or recompute it.
 	 * 	We are opting to recalculate it.  If the caller wants the original duration then they should replace it after the quantize.
 	 */
 	quantize({
@@ -98,17 +103,27 @@ export class RhythmGenerator {
 		includeOffset = true,
 		relation = 0,
 		rhythm
-	}) {
-		function _round(value) {
+	}: {
+		duration: number,
+		includeDuration?: boolean,
+		includeOffset?: boolean,
+		relation: number,
+		rhythm: MidiRhythm
+	}): MidiRhythm {
+		function _round(value: number): number {
 			const divisible = value / duration;
 			return duration * Math.round(divisible);
 		}
 
+		const initial: MidiRhythm = {
+			duration: 0,
+			events: []
+		};
 		return rhythm.events.reduce((result, event) => {
-			const newOffset = includeOffset
+			const newOffset = (includeOffset)
 				? _round(event.offset - relation)
 				: event.offset - relation;
-			const newDuration = includeDuration
+			const newDuration = (includeDuration)
 				? _round(event.offset + event.duration - relation) - newOffset
 				: event.duration + (event.offset - newOffset);
 			result.duration = Math.max(result.duration, newOffset + newDuration);
@@ -117,9 +132,6 @@ export class RhythmGenerator {
 				offset: newOffset
 			});
 			return result;
-		}, {
-			duration: 0,
-			events: []
-		});
+		}, initial);
 	}
 }
