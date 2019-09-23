@@ -7,8 +7,7 @@
 import {MidiEvent} from "./event";
 import {MidiTrack} from "./track";
 
-export type MidiChord = {
+export type MidiChord = Array<{
 	event: MidiEvent,
 	track: MidiTrack
-}[];
-
+}>;
