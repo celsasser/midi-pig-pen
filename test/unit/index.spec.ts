@@ -4,8 +4,10 @@
  * @license MIT (see project's LICENSE file)
  */
 
-const index=require("../../dist/index");
+import * as assert from "assert";
 
 describe("index", function() {
-
+	it("should pass", function() {
+		assert.ok(true);
+	});
 });

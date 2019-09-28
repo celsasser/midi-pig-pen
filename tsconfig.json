@@ -60,7 +60,6 @@
 		// "types": [],                           /* Type declaration files to be included in compilation. */
 	},
 	"include": [
-		"./res/**/*.ts",
 		"./src/**/*.js",
 		"./src/**/*.ts"
 	]

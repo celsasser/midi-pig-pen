@@ -19,12 +19,14 @@
 		"no-conditional-assignment": false,
 		"no-consecutive-blank-lines": [true, 2],
 		"object-literal-sort-keys": true,
+		"only-arrow-functions": false,
 		"ordered-imports": true,
 		"max-line-length": {
 			"options": {
 				"limit": 160
 			}
 		},
+		"quotemark": true,
 		"trailing-comma": {
 			"severity": "error"
 		},

@@ -7,12 +7,14 @@
 *.zip
 /log
 
-# eliminate .idea
+# eliminate ID
 .idea
+.vscode
 
 # npm modules will be built dynamically
 node_modules
+package-lock.json
 
-# dist will be built dynamically
+# build stuff that we don't want to keep in VCS
 dist
-
+reports
