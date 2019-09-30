@@ -4,8 +4,32 @@
  * @license MIT (see project's LICENSE file)
  */
 
-import "mocha";
+import * as assert from "assert";
+import {
+	RankedSequenceGraph
+} from "../../../src/graph/ranked";
 
 describe("graph.rank", function() {
+	describe("constructor", function() {
+		it("it should properly create an instance", function() {
+			const instance = new RankedSequenceGraph("graph");
+			assert.strictEqual(instance.name, "graph");
+		});
+	});
 
+	describe("addSequence", function() {
+
+	});
+
+	describe("getAllNotes", function() {
+
+	});
+
+	describe("getSequencesForNote", function() {
+
+	});
+
+	describe("traverse", function() {
+
+	});
 });

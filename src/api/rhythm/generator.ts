@@ -28,7 +28,7 @@ export class RhythmGenerator {
 	/**
 	 * Generates a rhythm based on the specified meta-pattern and duration
 	 */
-	fromMetaSequence(meta: MetaRhythmSequence): MidiRhythm {
+	public fromMetaSequence(meta: MetaRhythmSequence): MidiRhythm {
 		let offset: number = 0;
 		const events: MidiDurationEvent[] = [];
 		const ticksPerUnit = this.calculator.getUnitTicks(meta.quartersPerUnit);
@@ -56,7 +56,7 @@ export class RhythmGenerator {
 	 * @param offset - offset from which sequence starts. Defaults to first event
 	 * @param sequence
 	 */
-	fromSequence({
+	public fromSequence({
 		duration,
 		offset,
 		sequence
@@ -97,7 +97,7 @@ export class RhythmGenerator {
 	 * @param rhythm - we have two choices regarding the returned duration here: retain the original or recompute it.
 	 * 	We are opting to recalculate it.  If the caller wants the original duration then they should replace it after the quantize.
 	 */
-	quantize({
+	public quantize({
 		duration,
 		includeDuration = false,
 		includeOffset = true,

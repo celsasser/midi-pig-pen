@@ -1,70 +1,35 @@
 /**
- * Date: 8/25/19
- * Time: 9:59 PM
+ * Date: 9/16/19
+ * Time: 10:41 PM
  * @license MIT (see project's LICENSE file)
  */
 
 import * as _ from "lodash";
 import {MidiIoEventSubtype} from "midi-file-io";
 import {
-	GraphReusePolicy,
 	IGraph,
 	MidiSequence,
-	RankedNoteList,
-	TraverseGraphParam
+	RankedNoteElement,
+	TraverseAttributes,
+	TraverseGraphParam,
+	TraverseNoteGraph
 } from "../model";
-
 
 /**
  * Each unique note is tracked in its own node.
  */
 interface Node {
-	/**
-	 * 	total number of uses of this note
-	 */
-	count: number;
 	note: number;
-	/**
-	 * all note paths into this node. Mapped by note-from
-	 */
-	pathsIn: NodeReferenceMap;
-	/**
-	 * all note paths out of this node. Mapped by <code>this.note</code>
-	 */
-	pathsOut: NodeReferenceMap;
-	/**
-	 * array of all sequences that contain this note and the index at which this note is
-	 */
-	sequences: SequenceElement[];
+	nodeIn?: Node;
+	nodeOut?: Node;
 }
 
-type NodeMap = {[note: number]: Node};
-
 /**
- * Tracks references in and out of <code>Node</code>
- */
-interface NodeReference {
-	/**
-	 * Total number of references to <code>this.node</code>
-	 */
-	count: number;
-	node: Node;
-}
-
-type NodeReferenceMap = {[note: number]: NodeReference};
-type SequenceElement = {eventIndex: number, sequence: MidiSequence};
-
-
-/**
- * A bidirectional graph of all of the notes in one or more sequences. For each note we track:
- * - the total number of uses in all sequences
- * - all of the notes that immediately proceed it
- * - all of the notes that immediately follow it
- * - all references to the sequences that include it and the index in the sequence
+ * A uni-directional graph of notes
  */
 export class SequenceGraph implements IGraph {
 	public readonly name: string;
-	private map: NodeMap = {};
+	private _sequence: number[] = [];
 
 	constructor(name: string) {
 		this.name = name;
@@ -73,154 +38,133 @@ export class SequenceGraph implements IGraph {
 	/**
 	 * Adds sequence's path to our graph
 	 */
-	public addSequence(sequence: MidiSequence): void {
-		/**
-		 * Recursively adds the sequence
-		 */
-		const _addEventIndex = (index: number, prev?: Node) => {
-			if(index < sequence.events.length) {
-				const event = sequence.events[index];
-				const node: Node = _ensureMappedValue(this.map, event.noteNumber as number, () => ({
-						count: 0,
-						note: event.noteNumber as number,
-						pathsIn: {},
-						pathsOut: {},
-						sequences: []
-					})) as Node;
-				node.count++;
-				node.sequences.push({
-					eventIndex: index,
-					sequence
-				});
-				if(prev) {
-					_ensureMappedValue(node.pathsIn, prev.note, () => ({
-						count: 0,
-						node: prev
-					})).count++;
-					_ensureMappedValue(prev.pathsOut, node.note, () => ({
-						count: 0,
-						node
-					})).count++;
-				}
-				_addEventIndex(index + 1, node);
-			}
-		};
-
-		const _ensureMappedValue = (map: NodeMap|NodeReferenceMap, key: number, factory: () => Node|NodeReference): Node|NodeReference => {
-			return map.hasOwnProperty(key)
-				? map[key]
-				: (map[key] = factory());
-		};
-
+	public addSequence(sequence: MidiSequence, {
+		firstIndex = 0,
+		interval = 1
+	}): void {
 		// we are only interested in note-on events
-		sequence = Object.assign({}, sequence, {
-			events: sequence.events
-				.filter(event => event.subtype === MidiIoEventSubtype.noteOn)
-		});
-
-		_addEventIndex(0);
+		const noteEvents = sequence.events
+			.filter(event => event.subtype === MidiIoEventSubtype.noteOn);
+		for (let index = firstIndex; index < noteEvents.length; index += interval) {
+			this._sequence.push(noteEvents[index].noteNumber as number);
+		}
 	}
 
-	/**
-	 * All notes in descending popularity order
-	 */
-	public getAllNotes(): RankedNoteList {
-		return _.chain(this.map)
-			.map(node => ({
-				count: node.count,
-				note: node.note
-			}))
+	public getAllNotes(): RankedNoteElement[] {
+		const initial: {[key: number]: number} = {};
+		return _.chain(this._sequence)
+			.reduce((result, note) => {
+				if (note in result) {
+					result[note]++;
+				} else {
+					result[note] = 0;
+				}
+				return result;
+			}, initial)
+			.map((value, note) => {
+				return {
+					count: value,
+					note: Number(note)
+				};
+			})
 			.sortBy(node => 0 - node.count)
 			.value();
 	}
 
 	/**
-	 * All paths that go into and out of the specified note
-	 * @param note - note's node from which we want to build results
-	 * @param exclude - optional note numbers to exclude from the results
-	 * @return {{pathsIn: RankedNoteList, pathsOut: RankedNoteList}}
+	 * Gets list of notes in insert order
 	 */
-	public getNotePaths(note: number, exclude: number[] = []): {
-		pathsIn: RankedNoteList,
-		pathsOut: RankedNoteList
-	} {
-		const _build = (path: "pathsIn"|"pathsOut"): RankedNoteList => {
-			const pathData = _.get(this.map, `${note}.${path}`);
-			if(pathData === undefined) {
-				return [];
-			} else {
-				return _.chain(pathData)
-					.reduce((result: RankedNoteList, reference: NodeReference) => {
-						if(exclude.indexOf(reference.node.note) < 0) {
-							result.push({
-								count: reference.count,
-								note: reference.node.note
-							});
-						}
-						return result;
-					}, [])
-					.sortBy(element => 0 - element.count)
-					.value();
-			}
-		};
-		return {
-			pathsIn: _build("pathsIn"),
-			pathsOut: _build("pathsOut")
-		};
-	}
-
-	/**
-	 * Gets all sequences for the specified note
-	 * @param note
-	 * @param partial - whether you want the entire sequence or from the matched index on
-	 */
-	public getSequencesForNote({
-		note,
-		partial = false
-	}: {
-		note: number,
-		partial?: boolean
-	}): MidiSequence[] {
-		const node = this.map[note];
-		if(node === undefined) {
-			return [];
-		} else {
-			return _.map(node.sequences, element => {
-				if(partial === false) {
-					return element.sequence;
-				} else {
-					const sequence = element.sequence;
-					return {
-						duration: sequence.duration - (sequence.events[element.eventIndex].offset - sequence.events[0].offset),
-						events: sequence.events.slice(element.eventIndex)
-					};
-				}
-			});
-		}
+	public getInsertSequence(): number[] {
+		return this._sequence;
 	}
 
 	public traverse({
+		attributes = 0,
 		maxCount,
-		next = ({pathsOut}) => (pathsOut.length > 0) ? pathsOut[0].note : -1,
-		reusePolicy = GraphReusePolicy.ALLOW,
+		next,
 		startNote
 	}: TraverseGraphParam): number[] {
-		let exclude: number[] = [];
-		const _push = (note: number, index: number): number[] => {
-			if(index === maxCount || note < 0) {
-				return [];
+		const graph = this._buildGraph(Boolean(attributes & TraverseAttributes.Circular));
+		const domain = (attributes && TraverseAttributes.DisallowReuse)
+			? this.getAllNotes()
+			: [];
+		let used: Set<number> = new Set<number>();
+
+		const _getNext = (node: Node): Node | undefined => {
+			const param: TraverseNoteGraph = {
+				note: node.note,
+				pathsIn: [],
+				pathsOut: []
+			};
+			if (node.nodeIn) {
+				param.pathsIn.push({
+					count: 1,
+					id: node.nodeIn,
+					note: node.nodeIn.note
+				});
+			}
+			if (node.nodeOut) {
+				param.pathsOut.push({
+					count: 1,
+					id: node.nodeOut,
+					note: node.nodeOut.note
+				});
+			}
+			const result = next(param);
+			return (result)
+				? result.id
+				: undefined;
+		};
+
+		const _push = (node?: Node, result: number[] = []): number[] => {
+			if (node === undefined || result.length === maxCount) {
+				return result;
 			} else {
-				if(reusePolicy !== GraphReusePolicy.ALLOW) {
-					exclude.push(note);
+				if (attributes & TraverseAttributes.DisallowReuse) {
+					if (used.size === domain.length) {
+						if (attributes & TraverseAttributes.ResetAfterExhaust) {
+							used = new Set<number>();
+						} else {
+							return result;
+						}
+					}
+					if (used.has(node.note) === false) {
+						result.push(node.note);
+					}
+					return _push(_getNext(node), result);
+				} else {
+					result.push(node.note);
+					return _push(_getNext(node), result);
 				}
-				let nextNote = next(Object.assign({note}, this.getNotePaths(note, exclude)));
-				if(nextNote < 0 && reusePolicy === GraphReusePolicy.RESET) {
-					exclude = [];
-					nextNote = next(Object.assign({note}, this.getNotePaths(note, exclude)));
-				}
-				return [note].concat(_push(nextNote, index + 1));
 			}
 		};
-		return _push(startNote, 0);
+		return _push(graph);
+	}
+
+	private _buildGraph(circular: boolean): Node | undefined {
+		if (this._sequence.length === 0) {
+			return undefined;
+		} else {
+			const first: Node = {
+				note: this._sequence[0]
+			};
+			first.nodeIn = (circular) ? first : undefined;
+			first.nodeOut = (circular) ? first : undefined;
+			const _add = (index: number, prev: Node): Node | undefined => {
+				if (index < this._sequence.length) {
+					const node: Node = {
+						nodeIn: prev,
+						note: this._sequence[index]
+					};
+					node.nodeOut = _add(index + 1, node);
+					if (circular && node.nodeOut === undefined) {
+						node.nodeOut = first;
+					}
+					return node;
+				}
+				return undefined;
+			};
+			return _add(1, first) as Node;
+		}
 	}
 }

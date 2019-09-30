@@ -77,7 +77,7 @@ export class RhythmCalculator {
 				float: calculated.total,
 				floor: Math.floor(calculated.total)
 			}
-		}
+		};
 	}
 
 	public getPatternTicks(pattern: MetaRhythmPattern, ticksPerUnit: number): {
@@ -103,7 +103,7 @@ export class RhythmCalculator {
 				float: values.on,
 				floor: Math.floor(values.on)
 			}
-		}
+		};
 	}
 
 	/**

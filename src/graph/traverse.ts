@@ -6,11 +6,23 @@
 
 import * as _ from "lodash";
 import {
-	GraphReusePolicy,
 	IGraph,
-	TraverseGraphParam,
-	TraverseNoteSelectorParam
+	RankedNoteElement,
+	TraverseAttributes,
+	TraverseNoteGraph
 } from "../model";
+
+export type TraverseFunctionParam = {
+	attributes?: TraverseAttributes,
+	/**
+	 * maximum number of notes to generate
+	 */
+	maxCount: number,
+	/**
+	 * note within the graph from which to start.
+	 */
+	startNote?: number
+};
 
 
 /**
@@ -28,16 +40,16 @@ export class TraverseGraph {
 	 */
 	public leastPopularBackward({
 		maxCount,
-		reusePolicy = GraphReusePolicy.ALLOW,
-		startNote
-	}: Omit<TraverseGraphParam, "next">): number[] {
-		function next({pathsIn}: TraverseNoteSelectorParam): number {
+		attributes = 0,
+		startNote = this._getDefaultStartNote()
+	}: TraverseFunctionParam): number[] {
+		function next({pathsIn}: TraverseNoteGraph): RankedNoteElement | undefined {
 			return (pathsIn.length > 0)
-				? pathsIn[pathsIn.length - 1].note
-				: -1;
+				? pathsIn[pathsIn.length - 1]
+				: undefined;
 		}
 
-		return this._graph.traverse({maxCount, next, reusePolicy, startNote});
+		return this._graph.traverse({attributes, maxCount, next, startNote});
 	}
 
 	/**
@@ -45,99 +57,90 @@ export class TraverseGraph {
 	 */
 	public leastPopularForward({
 		maxCount,
-		reusePolicy = GraphReusePolicy.ALLOW,
-		startNote
-	}: Omit<TraverseGraphParam, "next">): number[] {
-		function next({pathsOut}: TraverseNoteSelectorParam): number {
+		attributes = 0,
+		startNote = this._getDefaultStartNote()
+	}: TraverseFunctionParam): number[] {
+		function next({pathsOut}: TraverseNoteGraph): RankedNoteElement | undefined {
 			return (pathsOut.length > 0)
-				? pathsOut[pathsOut.length - 1].note
-				: -1;
+				? pathsOut[pathsOut.length - 1]
+				: undefined;
 		}
 
-		return this._graph.traverse({maxCount, next, reusePolicy, startNote});
+		return this._graph.traverse({attributes, maxCount, next, startNote});
 	}
 
 	/**
 	 * Traverses the graph backwards and builds an array of the most popular note-to transitions. During each traversal either a note is added or iteration stops.
-	 * @param {number} maxCount
-	 * @param {GraphReusePolicy} reusePolicy
-	 * @param {number} startNote
-	 * @returns {Array<number>}
 	 */
 	public mostPopularBackward({
 		maxCount,
-		reusePolicy = GraphReusePolicy.ALLOW,
-		startNote
-	}: Omit<TraverseGraphParam, "next">): number[] {
-		function next({pathsIn}: TraverseNoteSelectorParam): number {
+		attributes = 0,
+		startNote = this._getDefaultStartNote()
+	}: TraverseFunctionParam): number[] {
+		function next({pathsIn}: TraverseNoteGraph): RankedNoteElement | undefined {
 			return (pathsIn.length > 0)
-				? pathsIn[0].note
-				: -1;
+				? pathsIn[0]
+				: undefined;
 		}
 
-		return this._graph.traverse({maxCount, next, reusePolicy, startNote});
+		return this._graph.traverse({attributes, maxCount, next, startNote});
 	}
 
 	/**
 	 * Traverses the graph forwards and builds an array of the most popular note-to transitions. During each traversal either a note is added or iteration stops.
-	 * @param {number} maxCount
-	 * @param {GraphReusePolicy} reusePolicy
-	 * @param {number} startNote
-	 * @returns {Array<number>}
 	 */
 	public mostPopularForward({
 		maxCount,
-		reusePolicy = GraphReusePolicy.ALLOW,
-		startNote
-	}: Omit<TraverseGraphParam, "next">): number[] {
-		function next({pathsOut}: TraverseNoteSelectorParam): number {
+		attributes = 0,
+		startNote = this._getDefaultStartNote()
+	}: TraverseFunctionParam): number[] {
+		function next({pathsOut}: TraverseNoteGraph): RankedNoteElement | undefined {
 			return (pathsOut.length > 0)
-				? pathsOut[0].note
-				: -1;
+				? pathsOut[0]
+				: undefined;
 		}
 
-		return this._graph.traverse({maxCount, next, reusePolicy, startNote});
+		return this._graph.traverse({attributes, maxCount, next, startNote});
 	}
 
 	/**
 	 * Traverses the graph backwards and builds an array of the least popular note-to transitions. During each traversal either a note is added or iteration stops.
-	 * @param {number} maxCount
-	 * @param {GraphReusePolicy} reusePolicy
-	 * @param {number} startNote
-	 * @returns {Array<number>}
 	 */
 	public randomBackward({
 		maxCount,
-		reusePolicy = GraphReusePolicy.ALLOW,
-		startNote
-	}: Omit<TraverseGraphParam, "next">): number[] {
-		function next({pathsIn}: TraverseNoteSelectorParam): number {
+		attributes = 0,
+		startNote = this._getDefaultStartNote()
+	}: TraverseFunctionParam): number[] {
+		function next({pathsIn}: TraverseNoteGraph): RankedNoteElement| undefined {
 			return (pathsIn.length > 0)
-				? pathsIn[_.random(pathsIn.length - 1)].note
-				: -1;
+				? pathsIn[_.random(pathsIn.length - 1)]
+				: undefined;
 		}
 
-		return this._graph.traverse({maxCount, next, reusePolicy, startNote});
+		return this._graph.traverse({attributes, maxCount, next, startNote});
 	}
 
 	/**
 	 * Traverses the graph forwards and builds an array of the least popular note-to transitions. During each traversal either a note is added or iteration stops.
-	 * @param {number} maxCount
-	 * @param {GraphReusePolicy} reusePolicy
-	 * @param {number} startNote
-	 * @returns {Array<number>}
 	 */
 	public randomForward({
 		maxCount,
-		reusePolicy = GraphReusePolicy.ALLOW,
-		startNote
-	}: Omit<TraverseGraphParam, "next">): number[] {
-		function next({pathsOut}: TraverseNoteSelectorParam): number {
+		attributes = 0,
+		startNote = this._getDefaultStartNote()
+	}: TraverseFunctionParam): number[] {
+		function next({pathsOut}: TraverseNoteGraph): RankedNoteElement| undefined {
 			return (pathsOut.length > 0)
-				? pathsOut[_.random(pathsOut.length - 1)].note
-				: -1;
+				? pathsOut[_.random(pathsOut.length - 1)]
+				: undefined;
 		}
 
-		return this._graph.traverse({maxCount, next, reusePolicy, startNote});
+		return this._graph.traverse({attributes, maxCount, next, startNote});
+	}
+
+	private _getDefaultStartNote(): number {
+		const insertSequence = this._graph.getInsertSequence();
+		return (insertSequence.length > 0)
+			? insertSequence[0]
+			: -1;
 	}
 }

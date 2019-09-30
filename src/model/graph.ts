@@ -4,54 +4,67 @@
  * @license MIT (see project's LICENSE file)
  */
 
-/**
- * How graphs allow reuse of identical notes
- */
-export enum GraphReusePolicy {
-	/**
-	 * allow reuse of notes which will loop once a note is re-encountered
-	 */
-	ALLOW = "allow",
+export enum TraverseAttributes {
+	Circular = 0x1 << 1,
 	/**
 	 * doesn't allow any note to be reused. Once there are no more paths then traversal ends.
 	 */
-	DISALLOW = "disallow",
+	DisallowReuse = 0x1 << 2,
 	/**
 	 * once all paths are exhausted it resets tracking and allows reuse
 	 */
-	RESET = "reset"
+	ResetAfterExhaust = 0x1 << 3
 }
 
 export interface IGraph {
 	/**
+	 * All notes in descending popularity order
+	 */
+	getAllNotes(): RankedNoteList;
+
+	/**
+	 * Gets list of notes in insert order
+	 */
+	getInsertSequence(): number[];
+
+	/**
 	 * Traverses the graph and builds an array of note values. During each traversal either a note is added or iteration stops.
 	 * The note chosen during iteration is determined by the callback function <param>next</param>.
 	 * It returns the array of notes generated.
-	 * @param maxCount - maximum number of notes to generate
-	 * @param next - chooses the next note to include in the returned sequence
-	 * @param reusePolicy
-	 * @param startNote - note within the graph from which to start
 	 */
-	traverse: (param: TraverseGraphParam) => number[];
+	traverse(param: TraverseGraphParam): number[];
 }
 
+export interface RankedNoteElement {
+	count: number;
+	/**
+	 * The idea here is to be able to optionally hold identifying info about this guy.
+	 */
+	id?: any;
+	note: number;
+}
 export type RankedNoteList = RankedNoteElement[];
-export type RankedNoteElement = {
-	count: number,
-	note: number
-};
 
 
-export type TraverseNoteSelector = (param: TraverseNoteSelectorParam) => number;
-export type TraverseNoteSelectorParam = {
+export type TraverseNoteGraph = {
 	note: number,
 	pathsIn: RankedNoteList,
 	pathsOut: RankedNoteList
 };
+export type TraverseNoteSelector = (graph: TraverseNoteGraph) => RankedNoteElement|undefined;
 
 export type TraverseGraphParam = {
+	attributes?: TraverseAttributes,
+	/**
+	 * maximum number of notes to generate
+	 */
 	maxCount: number,
-	next?: TraverseNoteSelector,
-	reusePolicy?: GraphReusePolicy,
+	/**
+	 * chooses the next note to include in the returned sequence
+	 */
+	next: TraverseNoteSelector,
+	/**
+	 * note within the graph from which to start.
+	 */
 	startNote: number
 };

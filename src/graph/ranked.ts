@@ -9,11 +9,11 @@ import {MidiIoEventSubtype} from "midi-file-io";
 import {
 	IGraph,
 	MidiSequence,
+	RankedNoteElement,
 	RankedNoteList,
 	TraverseAttributes,
 	TraverseGraphParam
 } from "../model";
-
 
 /**
  * Each unique note is tracked in its own node.
@@ -79,22 +79,22 @@ export class RankedSequenceGraph implements IGraph {
 		 * Recursively adds the sequence
 		 */
 		const _addEventIndex = (index: number, prev?: Node) => {
-			if(index < sequence.events.length) {
+			if (index < sequence.events.length) {
 				const event = sequence.events[index];
 				const node: Node = _ensureMappedValue(this._map, event.noteNumber as number, () => ({
-						count: 0,
-						note: event.noteNumber as number,
-						pathsIn: {},
-						pathsOut: {},
-						sequences: []
-					})) as Node;
+					count: 0,
+					note: event.noteNumber as number,
+					pathsIn: {},
+					pathsOut: {},
+					sequences: []
+				})) as Node;
 				node.count++;
 				node.sequences.push({
 					eventIndex: index,
 					sequence
 				});
 				this._insertSequence.push(node.note);
-				if(prev) {
+				if (prev) {
 					_ensureMappedValue(node.pathsIn, prev.note, () => ({
 						count: 0,
 						node: prev
@@ -108,7 +108,7 @@ export class RankedSequenceGraph implements IGraph {
 			}
 		};
 
-		const _ensureMappedValue = (map: NodeMap|NodeReferenceMap, key: number, factory: () => Node|NodeReference): Node|NodeReference => {
+		const _ensureMappedValue = (map: NodeMap | NodeReferenceMap, key: number, factory: () => Node | NodeReference): Node | NodeReference => {
 			return map.hasOwnProperty(key)
 				? map[key]
 				: (map[key] = factory());
@@ -153,14 +153,14 @@ export class RankedSequenceGraph implements IGraph {
 		pathsIn: RankedNoteList,
 		pathsOut: RankedNoteList
 	} {
-		const _build = (path: "pathsIn"|"pathsOut"): RankedNoteList => {
+		const _build = (path: "pathsIn" | "pathsOut"): RankedNoteList => {
 			const pathData = _.get(this._map, `${note}.${path}`);
-			if(pathData === undefined) {
+			if (pathData === undefined) {
 				return [];
 			} else {
 				return _.chain(pathData)
 					.reduce((result: RankedNoteList, reference: NodeReference) => {
-						if(exclude.indexOf(reference.node.note) < 0) {
+						if (exclude.indexOf(reference.node.note) < 0) {
 							result.push({
 								count: reference.count,
 								note: reference.node.note
@@ -191,11 +191,11 @@ export class RankedSequenceGraph implements IGraph {
 		partial?: boolean
 	}): MidiSequence[] {
 		const node = this._map[note];
-		if(node === undefined) {
+		if (node === undefined) {
 			return [];
 		} else {
 			return _.map(node.sequences, element => {
-				if(partial === false) {
+				if (partial === false) {
 					return element.sequence;
 				} else {
 					const sequence = element.sequence;
@@ -215,21 +215,22 @@ export class RankedSequenceGraph implements IGraph {
 		startNote
 	}: TraverseGraphParam): number[] {
 		let exclude: number[] = [];
-		const _push = (note: number, index: number): number[] => {
-			if(index === maxCount || note < 0) {
+		const _push = (noteElement: RankedNoteElement | undefined, index: number): number[] => {
+			if (index === maxCount || noteElement === undefined) {
 				return [];
 			} else {
-				if(attributes & TraverseAttributes.DisallowReuse) {
+				const note = noteElement.note;
+				if (attributes & TraverseAttributes.DisallowReuse) {
 					exclude.push(note);
 				}
-				let nextNote = next(Object.assign({note}, this.getNotePaths(note, exclude)));
-				if(nextNote < 0 && attributes & TraverseAttributes.ResetAfterExhaust) {
+				let nextElement = next(Object.assign({note}, this.getNotePaths(note, exclude)));
+				if (nextElement === undefined && attributes & TraverseAttributes.ResetAfterExhaust) {
 					exclude = [];
-					nextNote = next(Object.assign({note}, this.getNotePaths(note, exclude)));
+					nextElement = next(Object.assign({note}, this.getNotePaths(note, exclude)));
 				}
-				return [note].concat(_push(nextNote, index + 1));
+				return [note].concat(_push(nextElement, index + 1));
 			}
 		};
-		return _push(startNote, 0);
+		return _push(this._map[startNote], 0);
 	}
 }
