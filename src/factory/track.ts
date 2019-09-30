@@ -8,14 +8,16 @@ import {MidiTrack} from "../model";
 import {createId} from "./id";
 
 export function createTrack({
+	id = createId("track"),
 	instrument,
 	name
 }: {
+	id?: string,
 	instrument?: string,
 	name?: string
 } = {}): MidiTrack {
 	return {
-		id: createId("track"),
+		id,
 		instrument,
 		name,
 		sequence: {

@@ -4,8 +4,8 @@
  * @license MIT (see project's LICENSE file)
  */
 
-import * as _note from "../../../res/rhythm/note.json";
-import * as _pattern from "../../../res/rhythm/pattern.json";
 
-export const note = _note;
-export const pattern = _pattern;
+export default {
+	note: require("../../../res/rhythm/note.json"),
+	pattern: require("../../../res/rhythm/pattern.json")
+};

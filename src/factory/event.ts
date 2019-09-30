@@ -13,15 +13,36 @@ import {
 import {MidiEvent} from "../model";
 import {createId} from "./id";
 
+export function createEventFromIoEvent({
+	duration = 0,
+	event,
+	id = createId("event"),
+	offset = 0
+}: {
+	duration?: number
+	event: MidiIoEvent,
+	id?: string,
+	offset?: number,
+}): MidiEvent {
+	return {
+		duration,
+		id,
+		offset,
+		..._.omit(event, "deltaTime")
+	};
+}
+
 export function createNoteEvent({
 	channel,
 	duration,
+	id = createId("event"),
 	noteNumber,
 	offset,
 	velocity
 }: {
 	channel: number,
 	duration: number,
+	id?: string,
 	noteNumber: number,
 	offset: number,
 	velocity: number
@@ -29,7 +50,7 @@ export function createNoteEvent({
 	return {
 		channel,
 		duration,
-		id: createId("event"),
+		id,
 		noteNumber,
 		offset,
 		subtype: MidiIoEventSubtype.noteOn,
@@ -40,12 +61,12 @@ export function createNoteEvent({
 
 export function createTempoEvent({
 	beatsPerMinute = 120,
+	id = createId("event"),
 	offset = 0
-
 }): MidiEvent {
 	return {
 		duration: 0,
-		id: createId("event"),
+		id,
 		microsecondsPerBeat: Math.floor((60 * 1000000) / beatsPerMinute),
 		offset,
 		subtype: MidiIoEventSubtype.timeSignature,
@@ -55,38 +76,21 @@ export function createTempoEvent({
 
 export function createTimeSignatureEvent({
 	denominator = 4,
+	id = createId("event"),
 	metronome = 24,
 	numerator = 4,
 	offset = 0,
 	thirtyseconds = 8
-
 }): MidiEvent {
 	return {
 		denominator,
 		duration: 0,
-		id: createId("event"),
+		id,
 		metronome,
 		numerator,
 		offset,
 		subtype: MidiIoEventSubtype.timeSignature,
 		thirtyseconds,
 		type: MidiIoEventType.meta
-	};
-}
-
-export function createEventFromIoEvent({
-	event,
-	offset = 0,
-	duration = 0
-}: {
-	event: MidiIoEvent,
-	offset?: number,
-	duration?: number
-}): MidiEvent {
-	return {
-		duration,
-		id: createId("event"),
-		offset,
-		..._.omit(event, "deltaTime")
 	};
 }
