@@ -3,8 +3,8 @@
  * Time: 21:23
  * @license MIT (see project's LICENSE file)
  *
- * Some support for creating some common midi events. You may use them however
- * you like but the reason for creating them is primarily testing
+ * Some support for creating some common MIDI events as they exist in midi-file-io.
+ * You may use them however you like but the reason for creating them is primarily testing
  */
 
 import {

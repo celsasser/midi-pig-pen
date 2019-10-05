@@ -9,7 +9,6 @@
 
 # eliminate ID
 .idea
-.vscode
 
 # npm modules will be built dynamically
 node_modules
