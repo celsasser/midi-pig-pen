@@ -14,6 +14,9 @@ import {
 } from "../../model";
 import {RhythmCalculator} from "./calculator";
 
+/**
+ * Creates rhythm descriptions from various means of input.
+ */
 export class RhythmGenerator {
 	public readonly calculator: RhythmCalculator;
 
@@ -23,7 +26,6 @@ export class RhythmGenerator {
 	constructor(ticksPerQuarter: number) {
 		this.calculator = new RhythmCalculator(ticksPerQuarter);
 	}
-
 
 	/**
 	 * Generates a rhythm based on the specified meta-pattern and duration
@@ -43,9 +45,8 @@ export class RhythmGenerator {
 			offset += off.float + on.float;
 		}
 		return {
-			duration: (meta.duration !== undefined)
-				? meta.duration * ticksPerUnit
-				: offset,
+			duration:
+				meta.duration !== undefined ? meta.duration * ticksPerUnit : offset,
 			events
 		};
 	}
@@ -61,13 +62,12 @@ export class RhythmGenerator {
 		offset,
 		sequence
 	}: {
-		duration?: number,
-		offset?: number,
-		sequence: MidiSequence
+		duration?: number;
+		offset?: number;
+		sequence: MidiSequence;
 	}): MidiRhythm {
-		const start: number = (offset !== undefined)
-			? offset
-			: _.get(sequence.events, "0.offset", 0);
+		const start: number =
+			offset !== undefined ? offset : _.get(sequence.events, "0.offset", 0);
 		let maxOffset = start;
 		const events: MidiDurationEvent[] = [];
 		(sequence.events || [])
@@ -80,9 +80,7 @@ export class RhythmGenerator {
 				maxOffset = Math.max(maxOffset, noteEvent.offset + noteEvent.duration);
 			});
 		return {
-			duration: (duration !== undefined)
-				? duration
-				: maxOffset - start,
+			duration: duration !== undefined ? duration : maxOffset - start,
 			events
 		};
 	}
@@ -104,11 +102,11 @@ export class RhythmGenerator {
 		relation = 0,
 		rhythm
 	}: {
-		duration: number,
-		includeDuration?: boolean,
-		includeOffset?: boolean,
-		relation: number,
-		rhythm: MidiRhythm
+		duration: number;
+		includeDuration?: boolean;
+		includeOffset?: boolean;
+		relation: number;
+		rhythm: MidiRhythm;
 	}): MidiRhythm {
 		function _round(value: number): number {
 			const divisible = value / duration;
@@ -120,10 +118,10 @@ export class RhythmGenerator {
 			events: []
 		};
 		return rhythm.events.reduce((result, event) => {
-			const newOffset = (includeOffset)
+			const newOffset = includeOffset
 				? _round(event.offset - relation)
 				: event.offset - relation;
-			const newDuration = (includeDuration)
+			const newDuration = includeDuration
 				? _round(event.offset + event.duration - relation) - newOffset
 				: event.duration + (event.offset - newOffset);
 			result.duration = Math.max(result.duration, newOffset + newDuration);

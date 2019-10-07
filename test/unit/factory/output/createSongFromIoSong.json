@@ -1,0 +1,97 @@
+{
+	"header": {
+		"formatType": 0,
+		"ticksPerQuarter": 480
+	},
+	"tracks": [
+		{
+			"instrument": "Distant Air",
+			"name": "Classic Electric Piano",
+			"sequence": {
+				"duration": 1920,
+				"events": [
+					{
+						"channel": 15,
+						"duration": 0,
+						"offset": 0,
+						"subtype": "midiChannelPrefix",
+						"type": "meta"
+					},
+					{
+						"denominator": 4,
+						"duration": 0,
+						"metronome": 24,
+						"numerator": 4,
+						"offset": 0,
+						"subtype": "timeSignature",
+						"thirtyseconds": 8,
+						"type": "meta"
+					},
+					{
+						"duration": 0,
+						"key": 0,
+						"offset": 0,
+						"scale": 0,
+						"subtype": "keySignature",
+						"type": "meta"
+					},
+					{
+						"duration": 0,
+						"frame": 0,
+						"frameRate": 25,
+						"hour": 1,
+						"min": 0,
+						"offset": 0,
+						"sec": 0,
+						"subframe": 0,
+						"subtype": "smpteOffset",
+						"type": "meta"
+					},
+					{
+						"duration": 0,
+						"microsecondsPerBeat": 500000,
+						"offset": 0,
+						"subtype": "setTempo",
+						"type": "meta"
+					},
+					{
+						"channel": 0,
+						"duration": 480,
+						"noteNumber": 48,
+						"offset": 0,
+						"subtype": "noteOn",
+						"type": "channel",
+						"velocity": 80
+					},
+					{
+						"channel": 0,
+						"duration": 480,
+						"noteNumber": 50,
+						"offset": 480,
+						"subtype": "noteOn",
+						"type": "channel",
+						"velocity": 80
+					},
+					{
+						"channel": 0,
+						"duration": 480,
+						"noteNumber": 52,
+						"offset": 960,
+						"subtype": "noteOn",
+						"type": "channel",
+						"velocity": 80
+					},
+					{
+						"channel": 0,
+						"duration": 480,
+						"noteNumber": 53,
+						"offset": 1440,
+						"subtype": "noteOn",
+						"type": "channel",
+						"velocity": 80
+					}
+				]
+			}
+		}
+	]
+}

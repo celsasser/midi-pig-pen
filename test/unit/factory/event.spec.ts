@@ -31,7 +31,7 @@ describe("factory.event", function() {
 				type: "channel",
 				velocity: 0x7f
 			});
-			assert.ok(/^urn:event:\w+$/.test(event.id));
+			assert.ok(/^urn:event:[^:]+$/.test(event.id));
 		});
 
 		it("it should properly create with explicit params", function() {
@@ -114,4 +114,3 @@ describe("factory.event", function() {
 		});
 	});
 });
-

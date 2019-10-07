@@ -12,18 +12,13 @@ import {
 	MidiIoSong
 } from "midi-file-io";
 import {createId} from "../factory/id";
-import {
-	MidiEvent,
-	MidiSong,
-	MidiTrack
-} from "../model";
+import {MidiEvent, MidiSong, MidiTrack} from "../model";
 import {
 	createEventFromIoEvent,
 	createTempoEvent,
 	createTimeSignatureEvent
 } from "./event";
 import {createTrack} from "./track";
-
 
 /**
  * Creates a new sequence. Empty by default.
@@ -39,16 +34,18 @@ export function createSong({
 	 */
 	tracks
 }: {
-	beatsPerMinute?: number,
-	denominator?: number,
-	formatType?: MidiFileType,
-	numerator?: number,
-	ticksPerQuarter?: number,
-	tracks?: MidiTrack[]
+	beatsPerMinute?: number;
+	denominator?: number;
+	formatType?: MidiFileType;
+	numerator?: number;
+	ticksPerQuarter?: number;
+	tracks?: MidiTrack[];
 } = {}): MidiSong {
-	if(tracks === undefined) {
+	if (tracks === undefined) {
 		const track = createTrack();
-		track.sequence.events.push(createTimeSignatureEvent({denominator, numerator}));
+		track.sequence.events.push(
+			createTimeSignatureEvent({denominator, numerator})
+		);
 		track.sequence.events.push(createTempoEvent({beatsPerMinute}));
 		tracks = [track];
 	}
@@ -73,16 +70,17 @@ export function createSongFromIoSong(data: MidiIoSong): MidiSong {
 		 * @returns {MidiEvent|undefined}
 		 */
 		function _resolveNoteOn(noteOff: MidiEvent): MidiEvent {
-			for(let index = 0; index < noteOnStack.length; index++) {
-				if(noteOnStack[index].noteNumber === noteOff.noteNumber) {
-					noteOnStack[index].duration = noteOff.offset - noteOnStack[index].offset;
+			for (let index = 0; index < noteOnStack.length; index++) {
+				if (noteOnStack[index].noteNumber === noteOff.noteNumber) {
+					noteOnStack[index].duration =
+						noteOff.offset - noteOnStack[index].offset;
 					return noteOnStack.splice(index, 1)[0];
 				}
 			}
-			throw(new ColonyError({
+			throw new ColonyError({
 				details: `note=${noteOff.noteNumber} at ${noteOff.offset} could not be resolved`,
 				message: "mididata integrity"
-			}));
+			});
 		}
 
 		const noteOnStack: MidiEvent[] = [];
@@ -98,38 +96,44 @@ export function createSongFromIoSong(data: MidiIoSong): MidiSong {
 			}
 		};
 
-		track.sequence.events = events.reduce((result: MidiEvent[], eventIO: MidiIoEvent) => {
-			offset += eventIO.deltaTime;
-			let event = createEventFromIoEvent({
-				event: eventIO,
-				offset
-			});
-			// note: there are some events we take out of the track 'cause they are difficult to manage
-			// as events. We will put them back upon export (where valuable)
-			if(event.subtype === MidiIoEventSubtype.noteOff) {
-				if((event = _resolveNoteOn(event))) {
-					track.sequence.duration = Math.max(track.sequence.duration, event.offset + event.duration);
+		track.sequence.events = events.reduce(
+			(result: MidiEvent[], eventIO: MidiIoEvent) => {
+				offset += eventIO.deltaTime;
+				let event = createEventFromIoEvent({
+					event: eventIO,
+					offset
+				});
+				// note: there are some events we take out of the track 'cause they are difficult to manage
+				// as events. We will put them back upon export (where valuable)
+				if (event.subtype === MidiIoEventSubtype.noteOff) {
+					if ((event = _resolveNoteOn(event))) {
+						track.sequence.duration = Math.max(
+							track.sequence.duration,
+							event.offset + event.duration
+						);
+					}
+				} else if (event.subtype === MidiIoEventSubtype.trackName) {
+					track.name = event.text;
+				} else if (event.subtype === MidiIoEventSubtype.instrumentName) {
+					track.instrument = event.text;
+				} else if (event.subtype === MidiIoEventSubtype.endOfTrack) {
+					// this guy will only be a pain in the butt. We will see how we want to handle him.
+				} else {
+					if (event.subtype === "noteOn") {
+						noteOnStack.push(event);
+					}
+					result.push(event);
 				}
-			} else if(event.subtype === MidiIoEventSubtype.trackName) {
-				track.name = event.text;
-			} else if(event.subtype === MidiIoEventSubtype.instrumentName) {
-				track.instrument = event.text;
-			} else if(event.subtype === MidiIoEventSubtype.endOfTrack) {
-				// this guy will only be a pain in the butt. We will see how we want to handle him.
-			} else {
-				if(event.subtype === "noteOn") {
-					noteOnStack.push(event);
-				}
-				result.push(event);
-			}
-			return result;
-		}, []);
+				return result;
+			},
+			[]
+		);
 
-		if(noteOnStack.length > 0) {
-			throw(new ColonyError({
+		if (noteOnStack.length > 0) {
+			throw new ColonyError({
 				details: `${noteOnStack.length} note-ons unresolved`,
 				message: "mididata integrity"
-			}));
+			});
 		}
 		return track;
 	}
