@@ -13,7 +13,7 @@ import {
 import {
 	createSong,
 	createSongFromIoSong
-} from "../../../src/factory/song";
+} from "../../../src/factory";
 
 /**
  * Recursively removes all properties in <param>properties</param>
@@ -33,7 +33,7 @@ describe("factory.song", function() {
 		it("it should properly create a song instance with defaults", function() {
 			const song = createSong();
 			const scrubbed = scrubSong(song);
-			assert.deepEqual(scrubbed, require("./output/createSongWithDefaults"));
+			expect(scrubbed).toEqual(require("./output/createSongWithDefaults"));
 		});
 
 		it("it should create instance in accordance with params", function() {
@@ -45,7 +45,7 @@ describe("factory.song", function() {
 				ticksPerQuarter: 120
 			});
 			const scrubbed = scrubSong(song);
-			assert.deepEqual(scrubbed, require("./output/createSong"));
+			expect(scrubbed).toEqual(require("./output/createSong"));
 		});
 	});
 
@@ -54,7 +54,7 @@ describe("factory.song", function() {
 			const parsed = parseMidiFile("test/unit/factory/input/createSongFromIoSong.mid");
 			const song = createSongFromIoSong(parsed);
 			const scrubbed = scrubSong(song);
-			assert.deepEqual(scrubbed, require("./output/createSongFromIoSong.json"));
+			expect(scrubbed).toEqual(require("./output/createSongFromIoSong.json"));
 		});
 	});
 });

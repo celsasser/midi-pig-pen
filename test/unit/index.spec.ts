@@ -8,6 +8,6 @@ import * as assert from "assert";
 
 describe("index", function() {
 	it("should pass", function() {
-		assert.ok(true);
+		expect(true).toEqual(true);
 	});
 });

@@ -11,7 +11,7 @@ import {
 	createNoteEvent,
 	createTempoEvent,
 	createTimeSignatureEvent
-} from "../../../src/factory/event";
+} from "../../../src/factory";
 import {createMidiNoteOnEvent} from "../../../src/factory/midi";
 
 describe("factory.event", function() {
@@ -22,7 +22,7 @@ describe("factory.event", function() {
 					noteNumber: 32
 				})
 			});
-			assert.deepEqual(_.omit(event, "id"), {
+			expect(_.omit(event, "id")).toEqual({
 				channel: 0,
 				duration: 0,
 				noteNumber: 32,
@@ -31,7 +31,7 @@ describe("factory.event", function() {
 				type: "channel",
 				velocity: 0x7f
 			});
-			assert.ok(/^urn:event:[^:]+$/.test(event.id));
+			expect(event.id).toMatch(/^urn:event:[^:]+$/);
 		});
 
 		it("it should properly create with explicit params", function() {
@@ -43,7 +43,7 @@ describe("factory.event", function() {
 				id: "urn:event:id",
 				offset: 440
 			});
-			assert.deepEqual(_.omit(event, "id"), {
+			expect(_.omit(event, "id")).toEqual({
 				channel: 0,
 				duration: 880,
 				noteNumber: 32,
@@ -52,7 +52,7 @@ describe("factory.event", function() {
 				type: "channel",
 				velocity: 0x7f
 			});
-			assert.ok(/^urn:event:\w+$/.test(event.id));
+			expect(event.id).toMatch(/^urn:event:\w+$/);
 		});
 	});
 
@@ -66,7 +66,7 @@ describe("factory.event", function() {
 				offset: 440,
 				velocity: 0x7f
 			});
-			assert.deepEqual(event, {
+			expect(event).toEqual({
 				channel: 0,
 				duration: 440,
 				id: "urn:event:id",
@@ -84,7 +84,7 @@ describe("factory.event", function() {
 			const event = createTempoEvent({
 				id: "urn:event:id"
 			});
-			assert.deepEqual(event, {
+			expect(event).toEqual({
 				duration: 0,
 				id: "urn:event:id",
 				microsecondsPerBeat: 500000,
@@ -100,7 +100,7 @@ describe("factory.event", function() {
 			const event = createTimeSignatureEvent({
 				id: "urn:event:id"
 			});
-			assert.deepEqual(event, {
+			expect(event).toEqual({
 				denominator: 4,
 				duration: 0,
 				id: "urn:event:id",

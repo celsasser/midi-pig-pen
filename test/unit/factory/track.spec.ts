@@ -5,7 +5,7 @@
  */
 
 import * as assert from "assert";
-import {createTrack} from "../../../src/factory/track";
+import {createTrack} from "../../../src/factory";
 
 describe("factory.track", function() {
 	describe("createTrack", function() {
@@ -15,7 +15,7 @@ describe("factory.track", function() {
 				instrument: "piano",
 				name: "track 1"
 			});
-			assert.deepEqual(track, {
+			expect(track).toEqual({
 				id: "urn:track:id",
 				instrument: "piano",
 				name: "track 1",
