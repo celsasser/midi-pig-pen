@@ -13,7 +13,7 @@ describe("graph.sequence", function() {
 	describe("constructor", function() {
 		it("it should properly create an instance", function() {
 			const instance = new SequenceGraph("graph");
-			assert.strictEqual(instance.name, "graph");
+			expect(instance.name).toStrictEqual("graph");
 		});
 	});
 

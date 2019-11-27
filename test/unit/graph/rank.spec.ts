@@ -13,7 +13,7 @@ describe("graph.rank", function() {
 	describe("constructor", function() {
 		it("it should properly create an instance", function() {
 			const instance = new RankedSequenceGraph("graph");
-			assert.strictEqual(instance.name, "graph");
+			expect(instance.name).toStrictEqual("graph");
 		});
 	});
 

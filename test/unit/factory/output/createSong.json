@@ -1,0 +1,29 @@
+{
+	"header": {"formatType": 2, "ticksPerQuarter": 120},
+	"tracks": [
+		{
+			"sequence": {
+				"duration": 0,
+				"events": [
+					{
+						"denominator": 8,
+						"duration": 0,
+						"metronome": 24,
+						"numerator": 3,
+						"offset": 0,
+						"subtype": "timeSignature",
+						"thirtyseconds": 8,
+						"type": "meta"
+					},
+					{
+						"duration": 0,
+						"microsecondsPerBeat": 750000,
+						"offset": 0,
+						"subtype": "timeSignature",
+						"type": "meta"
+					}
+				]
+			}
+		}
+	]
+}

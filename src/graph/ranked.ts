@@ -52,8 +52,7 @@ interface NodeReference {
 }
 
 type NodeReferenceMap = {[note: number]: NodeReference};
-type SequenceElement = {eventIndex: number, sequence: MidiSequence};
-
+type SequenceElement = {eventIndex: number; sequence: MidiSequence};
 
 /**
  * A bidirectional graph of all of the notes in one or more sequences. For each note we track:
@@ -81,13 +80,17 @@ export class RankedSequenceGraph implements IGraph {
 		const _addEventIndex = (index: number, prev?: Node) => {
 			if (index < sequence.events.length) {
 				const event = sequence.events[index];
-				const node: Node = _ensureMappedValue(this._map, event.noteNumber as number, () => ({
-					count: 0,
-					note: event.noteNumber as number,
-					pathsIn: {},
-					pathsOut: {},
-					sequences: []
-				})) as Node;
+				const node: Node = _ensureMappedValue(
+					this._map,
+					event.noteNumber as number,
+					() => ({
+						count: 0,
+						note: event.noteNumber as number,
+						pathsIn: {},
+						pathsOut: {},
+						sequences: []
+					})
+				) as Node;
 				node.count++;
 				node.sequences.push({
 					eventIndex: index,
@@ -108,16 +111,19 @@ export class RankedSequenceGraph implements IGraph {
 			}
 		};
 
-		const _ensureMappedValue = (map: NodeMap | NodeReferenceMap, key: number, factory: () => Node | NodeReference): Node | NodeReference => {
-			return map.hasOwnProperty(key)
-				? map[key]
-				: (map[key] = factory());
+		const _ensureMappedValue = (
+			map: NodeMap | NodeReferenceMap,
+			key: number,
+			factory: () => Node | NodeReference
+		): Node | NodeReference => {
+			return map.hasOwnProperty(key) ? map[key] : (map[key] = factory());
 		};
 
 		// we are only interested in note-on events
 		sequence = Object.assign({}, sequence, {
-			events: sequence.events
-				.filter(event => event.subtype === MidiIoEventSubtype.noteOn)
+			events: sequence.events.filter(
+				event => event.subtype === MidiIoEventSubtype.noteOn
+			)
 		});
 
 		_addEventIndex(0);
@@ -149,9 +155,12 @@ export class RankedSequenceGraph implements IGraph {
 	 * @param exclude - optional note numbers to exclude from the results
 	 * @return {{pathsIn: RankedNoteList, pathsOut: RankedNoteList}}
 	 */
-	public getNotePaths(note: number, exclude: number[] = []): {
-		pathsIn: RankedNoteList,
-		pathsOut: RankedNoteList
+	public getNotePaths(
+		note: number,
+		exclude: number[] = []
+	): {
+		pathsIn: RankedNoteList;
+		pathsOut: RankedNoteList;
 	} {
 		const _build = (path: "pathsIn" | "pathsOut"): RankedNoteList => {
 			const pathData = _.get(this._map, `${note}.${path}`);
@@ -187,8 +196,8 @@ export class RankedSequenceGraph implements IGraph {
 		note,
 		partial = false
 	}: {
-		note: number,
-		partial?: boolean
+		note: number;
+		partial?: boolean;
 	}): MidiSequence[] {
 		const node = this._map[note];
 		if (node === undefined) {
@@ -200,7 +209,10 @@ export class RankedSequenceGraph implements IGraph {
 				} else {
 					const sequence = element.sequence;
 					return {
-						duration: sequence.duration - (sequence.events[element.eventIndex].offset - sequence.events[0].offset),
+						duration:
+							sequence.duration -
+							(sequence.events[element.eventIndex].offset -
+								sequence.events[0].offset),
 						events: sequence.events.slice(element.eventIndex)
 					};
 				}
@@ -215,7 +227,10 @@ export class RankedSequenceGraph implements IGraph {
 		startNote
 	}: TraverseGraphParam): number[] {
 		let exclude: number[] = [];
-		const _push = (noteElement: RankedNoteElement | undefined, index: number): number[] => {
+		const _push = (
+			noteElement: RankedNoteElement | undefined,
+			index: number
+		): number[] => {
 			if (index === maxCount || noteElement === undefined) {
 				return [];
 			} else {
@@ -223,10 +238,17 @@ export class RankedSequenceGraph implements IGraph {
 				if (attributes & TraverseAttributes.DisallowReuse) {
 					exclude.push(note);
 				}
-				let nextElement = next(Object.assign({note}, this.getNotePaths(note, exclude)));
-				if (nextElement === undefined && attributes & TraverseAttributes.ResetAfterExhaust) {
+				let nextElement = next(
+					Object.assign({note}, this.getNotePaths(note, exclude))
+				);
+				if (
+					nextElement === undefined &&
+					attributes & TraverseAttributes.ResetAfterExhaust
+				) {
 					exclude = [];
-					nextElement = next(Object.assign({note}, this.getNotePaths(note, exclude)));
+					nextElement = next(
+						Object.assign({note}, this.getNotePaths(note, exclude))
+					);
 				}
 				return [note].concat(_push(nextElement, index + 1));
 			}

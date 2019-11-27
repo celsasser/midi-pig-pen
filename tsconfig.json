@@ -17,7 +17,7 @@
 		/* Report error when not all code paths in function return a value. */
 		"noImplicitReturns": true,
 		/* Report errors on unused locals. */
-		"noUnusedLocals": true,
+		"noUnusedLocals": false,
 		"pretty": false,
 		"resolveJsonModule": true,
 		"strict": true,
@@ -59,8 +59,5 @@
 		// "typeRoots": [],                       /* List of folders to include type definitions from. */
 		// "types": [],                           /* Type declaration files to be included in compilation. */
 	},
-	"include": [
-		"./src/**/*.js",
-		"./src/**/*.ts"
-	]
+	"include": ["./src/**/*.js", "./src/**/*.ts"]
 }

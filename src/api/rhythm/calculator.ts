@@ -11,7 +11,6 @@ import {
 	RhythmUnit
 } from "../../model";
 
-
 /**
  * Calculates tick values for one or more <code>MetaRhythmSequence</code> descriptions
  */
@@ -19,7 +18,7 @@ export class RhythmCalculator {
 	public readonly ticksPerQuarter: number;
 
 	/**
-	 * All tick calculations within are based on <param>ticksPerQuarter</param>
+	 * All tick calculations within are based on <param>ticksPerQuarter</param>. Often called PPQ.
 	 */
 	constructor(ticksPerQuarter: number) {
 		this.ticksPerQuarter = ticksPerQuarter;
@@ -27,40 +26,48 @@ export class RhythmCalculator {
 
 	/**
 	 * Calculates the number of ticks per <param>quartersPerUnit</param>
+	 * Quarters per unit is basically bottom number in a time-signature - "what note value gets the beat?".
+	 * For our purposes it will probably always be 1 to 1
 	 */
 	public getUnitTicks(quartersPerUnit: RhythmUnit): number {
-		return (typeof (quartersPerUnit) === "number")
+		return typeof quartersPerUnit === "number"
 			? this.ticksPerQuarter * quartersPerUnit
-			: this.ticksPerQuarter * quartersPerUnit.numerator / quartersPerUnit.denominator;
+			: (this.ticksPerQuarter * quartersPerUnit.numerator) /
+			quartersPerUnit.denominator;
 	}
 
 	/**
 	 * Returns length of specified rhythm description
 	 * see <link>/res/rhythm</link>
 	 */
-	public getSequenceTicks(sequence: MetaRhythmSequence|MetaRhythmSequence[]): {
-		off: MetaRhythmDuration,
-		on: MetaRhythmDuration,
-		total: MetaRhythmDuration
+	public getSequenceTicks(
+		sequence: MetaRhythmSequence|MetaRhythmSequence[]
+	): {
+		off: MetaRhythmDuration;
+		on: MetaRhythmDuration;
+		total: MetaRhythmDuration;
 	} {
 		let calculated: {
-			off: number,
-			on: number,
-			total: number
+			off: number;
+			on: number;
+			total: number;
 		};
 		if(sequence instanceof Array) {
-			calculated = sequence.reduce((result, _meta) => {
-				const {on, off, total} = this._getSequenceTicks(_meta);
-				return {
-					off: result.off + off,
-					on: result.on + on,
-					total: result.total + total
-				};
-			}, {
-				off: 0,
-				on: 0,
-				total: 0
-			});
+			calculated = sequence.reduce(
+				(result, _meta) => {
+					const {on, off, total} = this._getSequenceTicks(_meta);
+					return {
+						off: result.off + off,
+						on: result.on + on,
+						total: result.total + total
+					};
+				},
+				{
+					off: 0,
+					on: 0,
+					total: 0
+				}
+			);
 		} else {
 			calculated = this._getSequenceTicks(sequence);
 		}
@@ -80,9 +87,12 @@ export class RhythmCalculator {
 		};
 	}
 
-	public getPatternTicks(pattern: MetaRhythmPattern, ticksPerUnit: number): {
-		off: MetaRhythmDuration,
-		on: MetaRhythmDuration
+	public getPatternTicks(
+		pattern: MetaRhythmPattern,
+		ticksPerUnit: number
+	): {
+		off: MetaRhythmDuration;
+		on: MetaRhythmDuration;
 	} {
 		const values = {
 			off: 0,
@@ -110,10 +120,12 @@ export class RhythmCalculator {
 	 * Returns calculated floats
 	 * @private
 	 */
-	private _getSequenceTicks(sequence: MetaRhythmSequence): {
-		off: number,
-		on: number,
-		total: number
+	private _getSequenceTicks(
+		sequence: MetaRhythmSequence
+	): {
+		off: number;
+		on: number;
+		total: number;
 	} {
 		const unitTicks = this.getUnitTicks(sequence.quartersPerUnit);
 		const result = {
@@ -128,10 +140,14 @@ export class RhythmCalculator {
 				result.off += unitTicks * pattern.off;
 			}
 		}
-		return Object.assign({
-			total: (sequence.duration !== undefined)
-				? sequence.duration * unitTicks
-				: result.off + result.on
-		}, result);
+		return Object.assign(
+			{
+				total:
+					sequence.duration !== undefined
+						? sequence.duration * unitTicks
+						: result.off + result.on
+			},
+			result
+		);
 	}
 }

@@ -1,0 +1,225 @@
+{
+	"_data": {
+		"header": {
+			"formatType": 1,
+			"ticksPerBeat": 480,
+			"trackCount": 3
+		},
+		"tracks": [
+			{
+				"id": "urn:track:LMODLjkM-7y",
+				"sequence": {
+					"duration": 0,
+					"events": [
+						{
+							"denominator": 4,
+							"duration": 0,
+							"id": "urn:event:EZ2DO3njJMZ",
+							"metronome": 24,
+							"numerator": 4,
+							"offset": 0,
+							"subtype": "timeSignature",
+							"thirtyseconds": 8,
+							"type": "meta"
+						},
+						{
+							"duration": 0,
+							"id": "urn:event:nBjzzGYcqlT",
+							"key": 0,
+							"offset": 0,
+							"scale": 0,
+							"subtype": "keySignature",
+							"type": "meta"
+						},
+						{
+							"duration": 0,
+							"frame": 0,
+							"frameRate": 25,
+							"hour": 1,
+							"id": "urn:event:WA_U8MRNVVO",
+							"min": 0,
+							"offset": 0,
+							"sec": 0,
+							"subframe": 0,
+							"subtype": "smpteOffset",
+							"type": "meta"
+						},
+						{
+							"duration": 0,
+							"id": "urn:event:xrHUO1d1F7h",
+							"microsecondsPerBeat": 500000,
+							"offset": 0,
+							"subtype": "setTempo",
+							"type": "meta"
+						}
+					]
+				}
+			},
+			{
+				"id": "urn:track:Vqj2sEN-NaO",
+				"instrument": "track1",
+				"name": "Classic Electric Piano",
+				"sequence": {
+					"duration": 3840,
+					"events": [
+						{
+							"channel": 15,
+							"duration": 0,
+							"id": "urn:event:6H5v7sjx5Jf",
+							"offset": 0,
+							"subtype": "midiChannelPrefix",
+							"type": "meta"
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:t0H0-QoQFhi",
+							"noteNumber": 48,
+							"offset": 0,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:O--nFZrhjsZ",
+							"noteNumber": 52,
+							"offset": 0,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:7N77g8tvXlv",
+							"noteNumber": 55,
+							"offset": 0,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:4GKm0FqLU2J",
+							"noteNumber": 48,
+							"offset": 1920,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:CS5qPffsthI",
+							"noteNumber": 51,
+							"offset": 2040,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:ZaPM_j7CVia",
+							"noteNumber": 55,
+							"offset": 2160,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:IZwV3OxPa_A",
+							"noteNumber": 60,
+							"offset": 2880,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:g9BPcZ5YiKA",
+							"noteNumber": 64,
+							"offset": 3360,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						}
+					]
+				}
+			},
+			{
+				"id": "urn:track:uZsCkq8kl2H",
+				"instrument": "track2",
+				"name": "Classic Electric Piano",
+				"sequence": {
+					"duration": 2520,
+					"events": [
+						{
+							"channel": 15,
+							"duration": 0,
+							"id": "urn:event:rM-b_IvB8e0",
+							"offset": 0,
+							"subtype": "midiChannelPrefix",
+							"type": "meta"
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:QaIwR8R8PN0",
+							"noteNumber": 50,
+							"offset": 0,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:0URssQ0fIA8",
+							"noteNumber": 55,
+							"offset": 0,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:xieL4wAJGYr",
+							"noteNumber": 50,
+							"offset": 1920,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						},
+						{
+							"channel": 0,
+							"duration": 0,
+							"id": "urn:event:3kz4Gso_RZP",
+							"offset": 1980,
+							"subtype": "pitchBend",
+							"type": "channel",
+							"value": 8704
+						},
+						{
+							"channel": 0,
+							"duration": 480,
+							"id": "urn:event:6U-4GCrcBUA",
+							"noteNumber": 55,
+							"offset": 2040,
+							"subtype": "noteOn",
+							"type": "channel",
+							"velocity": 80
+						}
+					]
+				}
+			}
+		]
+	}
+}
